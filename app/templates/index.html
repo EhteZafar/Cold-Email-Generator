@@ -99,17 +99,20 @@
 
                 // Display job information
                 document.getElementById('jobInfoSection').classList.remove('hidden');
-                document.getElementById('jobRole').textContent = data.job_info['Job Role'];
-                document.getElementById('jobDescription').textContent = data.job_info['Job Description'];
-                document.getElementById('jobExperience').textContent = data.job_info['Job Experience'];
+                document.getElementById('jobRole').textContent = data.job_info.Job_Role || data.job_info['Job Role'];
+                document.getElementById('jobDescription').textContent = data.job_info.Job_Description || data.job_info['Job Description'];
+                document.getElementById('jobExperience').textContent = data.job_info.Job_Experience || data.job_info['Job Experience'];
                 
                 const skillsList = document.getElementById('jobSkills');
                 skillsList.innerHTML = '';
-                data.job_info['Job Skills'].forEach(skill => {
-                    const li = document.createElement('li');
-                    li.textContent = skill;
-                    skillsList.appendChild(li);
-                });
+                const skills = data.job_info.Job_Skills || data.job_info['Job Skills'] || [];
+                if (Array.isArray(skills)) {
+                    skills.forEach(skill => {
+                        const li = document.createElement('li');
+                        li.textContent = skill;
+                        skillsList.appendChild(li);
+                    });
+                }
 
                 // Display generated email
                 document.getElementById('emailSection').classList.remove('hidden');

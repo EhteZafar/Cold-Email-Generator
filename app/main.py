@@ -53,12 +53,22 @@ email_prompt = PromptTemplate.from_template(
     {job_description}
     
     ### CANDIDATE DETAILS:
-    My name is Ehtesham Zafar. I am a software developer with over 2 years of experience in various technologies including TypeScript, Java, Node.js, and cloud automation. I have a strong background in developing applications and automating processes in cloud environments. 
-    
+    My name is Ehtesham Zafar, a skilled software developer with over two years of experience specializing in TypeScript, Java, Node.js, and cloud automation. I have a strong track record of developing scalable applications and optimizing cloud-based workflows. My expertise aligns well with the skills required for this role.
+
     ### INSTRUCTIONS:
-    Your job is to write a cold email to the hiring manager of the job post, incorporating the above details and ensuring it is professional and concise.
-    Also add the relevant links to my portfolio in the email: {links}
-    Do not add any preamble in the email.
+    Craft a professional yet concise cold email to the hiring manager that:
+    - Clearly expresses my enthusiasm for the role.
+    - Highlights my **most relevant skills** and experience.
+    - Shows how I can **add value to the company**.
+    - Lists ONLY the most relevant portfolio links (maximum 4) that best match the job requirements:
+      {links}
+    - Avoids generic statements—make it **personalized and engaging**.
+    - Keeps the tone **polite, enthusiastic, and professional**.
+    - Focuses on the specific technologies and skills mentioned in the job description.
+
+    Ensure the email **directly starts with the content**—no preamble or unnecessary introductions.
+    Keep the portfolio links section brief and focused on the most relevant projects.
+
     ### EMAIL (NO PREAMBLE):
     """
 )
@@ -74,34 +84,37 @@ async def generate_email(job_url: str = Form(...)):
         loader = WebBaseLoader(job_url)
         page_data = loader.load().pop().page_content
         
-        # print(page_data)
-
         # 2. Extract job information
         chain_extractor = job_extractor_prompt | llm
         job_info_response = chain_extractor.invoke(input={'page_data': page_data})
-        # print(job_info_response.content)
         
         # 3. Parse JSON response
         json_parser = JsonOutputParser()
         job_info = json_parser.parse(job_info_response.content)
 
         # 4. Get relevant portfolio links based on job skills
+        job_skills = job_info.get('Job Skills', [])
+        if not job_skills:
+            return {"error": "No job skills found in the posting"}
+
+        # Query for relevant portfolio links based on job skills
         links = collection.query(
-            query_texts=job_info['Job Skills'], 
-            n_results=3
+            query_texts=job_skills,
+            n_results=2  # Get top 2 matches per skill
         ).get('metadatas', [])
+
+        # Flatten and get unique links, limiting to top 4 most relevant
+        unique_links = list(set(link['links'].strip() for sublist in links for link in sublist))[:4]
 
         # 5. Generate email
         chain_email = email_prompt | llm
         email = chain_email.invoke(
             input={
                 'job_description': job_info['Job Description'],
-                'links': links
+                'links': unique_links
             }
         )
         
-        print(email.content)
-
         return {
             "job_info": job_info,
             "email": email.content
