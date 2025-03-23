@@ -89,21 +89,23 @@
                 });
                 
                 const data = await response.json();
+                console.log('Response data:', data);
                 
                 if (data.error) {
+                    console.error('Server error:', data.error);
                     alert(data.error);
                     return;
                 }
 
                 // Display job information
                 document.getElementById('jobInfoSection').classList.remove('hidden');
-                document.getElementById('jobRole').textContent = data.job_info.Job_Role;
-                document.getElementById('jobDescription').textContent = data.job_info.Job_Description;
-                document.getElementById('jobExperience').textContent = data.job_info.Job_Experience;
+                document.getElementById('jobRole').textContent = data.job_info['Job Role'];
+                document.getElementById('jobDescription').textContent = data.job_info['Job Description'];
+                document.getElementById('jobExperience').textContent = data.job_info['Job Experience'];
                 
                 const skillsList = document.getElementById('jobSkills');
                 skillsList.innerHTML = '';
-                data.job_info.Job_Skills.forEach(skill => {
+                data.job_info['Job Skills'].forEach(skill => {
                     const li = document.createElement('li');
                     li.textContent = skill;
                     skillsList.appendChild(li);
@@ -113,7 +115,7 @@
                 document.getElementById('emailSection').classList.remove('hidden');
                 document.getElementById('generatedEmail').textContent = data.email;
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Detailed error:', error);
                 alert('An error occurred while generating the email');
             }
         });

@@ -74,11 +74,12 @@ async def generate_email(job_url: str = Form(...)):
         loader = WebBaseLoader(job_url)
         page_data = loader.load().pop().page_content
         
+        # print(page_data)
 
         # 2. Extract job information
         chain_extractor = job_extractor_prompt | llm
         job_info_response = chain_extractor.invoke(input={'page_data': page_data})
-        print(job_info_response.content)
+        # print(job_info_response.content)
         
         # 3. Parse JSON response
         json_parser = JsonOutputParser()
@@ -98,6 +99,8 @@ async def generate_email(job_url: str = Form(...)):
                 'links': links
             }
         )
+        
+        print(email.content)
 
         return {
             "job_info": job_info,
