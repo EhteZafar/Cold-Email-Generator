@@ -1,6 +1,6 @@
 # Cold Email Generator 📧
 
-A FastAPI-based application that automatically generates personalized cold emails for job applications by analyzing job postings and matching them with your portfolio.
+A FastAPI-based application that leverages RAG (Retrieval Augmented Generation) and semantic search to automatically generate personalized cold emails for job applications by analyzing job postings and intelligently matching them with your portfolio.
 
 ## 🌟 Features
 
@@ -11,18 +11,42 @@ A FastAPI-based application that automatically generates personalized cold email
   - Required Experience
   - Required Qualifications
   - Required Skills
-- **Portfolio Matching**: Automatically matches your relevant portfolio projects with job requirements
-- **Email Generation**: Creates personalized cold emails using AI
+- **Intelligent Portfolio Matching**: Uses semantic search and RAG to match your most relevant portfolio projects with job requirements
+- **AI-Powered Email Generation**: Creates personalized cold emails using advanced language models
 - **Modern Web Interface**: Clean, responsive UI with easy copy-paste functionality
 
 ## 🛠️ Tech Stack
 
-- **Backend**: FastAPI, Python 3.11
-- **AI/ML**: LangChain, Groq LLM
-- **Vector Database**: ChromaDB
-- **Frontend**: HTML, Tailwind CSS
-- **Data Parsing**: Pandas
-- **Web Scraping**: LangChain WebBaseLoader
+### Backend Framework
+- **FastAPI**: Modern, fast web framework for building APIs with Python
+- **Python 3.11+**: Core programming language
+
+### AI/ML Components
+- **LangChain**: Framework for developing applications powered by language models
+- **Groq LLM**: High-performance language model for text generation
+- **RAG (Retrieval Augmented Generation)**: Architecture that combines retrieval-based and generative AI
+- **Semantic Search**: Advanced text similarity search for portfolio matching
+
+### Vector Database
+- **ChromaDB**: Embedded vector database for:
+  - Storing portfolio embeddings
+  - Semantic similarity search
+  - Efficient retrieval of relevant portfolio examples
+
+### Frontend
+- **HTML/Jinja2**: Template engine for dynamic content
+- **Tailwind CSS**: Utility-first CSS framework for modern UI
+- **JavaScript**: Client-side interactivity and form handling
+
+### Data Processing
+- **Pandas**: Data manipulation and analysis
+- **JSON**: Data formatting and structure
+- **WebBaseLoader (LangChain)**: Intelligent web scraping for job postings
+
+### Development Tools
+- **dotenv**: Environment variable management
+- **uvicorn**: ASGI server for FastAPI
+- **Git**: Version control
 
 ## 📋 Prerequisites
 
@@ -57,20 +81,23 @@ pip install -r requirements.txt
 Create a `.env` file in the root directory:
 ```env
 GROQ_API_KEY=your_groq_api_key
+USER_AGENT=your_user_agent_string
 ```
 
 ## 📂 Project Structure
 
+```
 Cold-Email-Generator/
 ├── app/
-│ ├── main.py # FastAPI application
-│ ├── static/ # Static files
-│ ├── templates/ # HTML templates
-│ └── assets/ # Project assets
-├── .env # Environment variables
-├── requirements.txt # Project dependencies
-└── README.md # Project documentation
-
+│   ├── main.py          # FastAPI application
+│   ├── static/          # Static files
+│   ├── templates/       # HTML templates
+│   └── assets/         # Project assets
+├── vector_db/          # ChromaDB storage
+├── .env               # Environment variables
+├── requirements.txt   # Project dependencies
+└── README.md         # Project documentation
+```
 
 ## 🎯 Usage
 
@@ -89,19 +116,38 @@ uvicorn app.main:app --reload
 ## 💡 How It Works
 
 1. **Job Information Extraction**
-   - Scrapes job posting URL
-   - Extracts key information using AI
-   - Structures data in JSON format
+   - Scrapes job posting URL using WebBaseLoader
+   - Uses LLM to extract structured information
+   - Formats data in JSON format
 
-2. **Portfolio Matching**
-   - Analyzes job requirements
-   - Matches with relevant portfolio projects
-   - Selects most relevant examples
+2. **Portfolio Matching (RAG Implementation)**
+   - Analyzes job requirements using semantic search
+   - Queries ChromaDB vector database for relevant portfolio projects
+   - Uses similarity matching to find best portfolio examples
+   - Implements RAG architecture to enhance relevance
 
 3. **Email Generation**
-   - Creates personalized email using extracted information
-   - Includes relevant portfolio links
-   - Maintains professional tone
+   - Utilizes Groq LLM for natural language generation
+   - Incorporates retrieved portfolio examples
+   - Creates personalized, context-aware emails
+   - Maintains professional tone and structure
+
+## 🔍 Technical Implementation
+
+### RAG Architecture
+- **Retrieval**: Uses ChromaDB's semantic search to find relevant portfolio examples
+- **Augmentation**: Enhances LLM prompts with retrieved portfolio information
+- **Generation**: Creates personalized emails using augmented context
+
+### Vector Database Implementation
+- Portfolio projects are stored as embeddings in ChromaDB
+- Semantic similarity search for matching job skills
+- Efficient retrieval of relevant examples
+
+### LLM Integration
+- Uses Groq's LLM for both information extraction and email generation
+- Custom prompts for different tasks
+- Temperature control for appropriate creativity levels
 
 ## 🤝 Contributing
 
